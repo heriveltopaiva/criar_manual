@@ -1,0 +1,9 @@
+
+├── agentes/
+│   └── redator_manuais/
+│       ├── instrucoes.md        ← o "cérebro": papel, regras, proibições
+│       ├── template_manual.md   ← formato fixo de saída
+│       └── agente.py            ← o motor (você escreve)
+├── entrada/                     ← material bruto (código, anotações)
+├── manuais/                     ← saída: um .md por assunto
+└── AGENTS.md                    ← índice que diz aos agentes: "leiam manuais/"
