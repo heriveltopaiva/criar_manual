@@ -1,0 +1,1 @@
+Ideia: usar Python para gerar relatórios automáticos em PDF.

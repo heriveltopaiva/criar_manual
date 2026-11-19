@@ -1,0 +1,1 @@
+Decidi usar o gemma4:12b no projeto Segundo Cérebro porque foi o modelo mais preciso nos testes de classificação.

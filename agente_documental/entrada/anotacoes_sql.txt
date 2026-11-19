@@ -1,0 +1,1 @@
+No projeto Estoque, usei LEFT JOIN para trazer produtos sem venda.

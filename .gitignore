@@ -1,2 +1,8 @@
+agente_documental/historico/inventario.csv
+__pycache__/
+*.pyc
 .venv
 .env
+evolucao/
+vault/
+
