@@ -1,0 +1,57 @@
+{
+  "origem": "teste1.md",
+  "analisado_em": "2026-11-19T03:10:29",
+  "modelo": "gemma4:12b",
+  "classificacao": {
+    "tipo": "conhecimento",
+    "assuntos": [
+      "SQL"
+    ],
+    "conceitos": [
+      "JOIN"
+    ],
+    "projetos": [
+      "Estoque"
+    ]
+  },
+  "propostas": [
+    {
+      "id": 1,
+      "nota": "Knowledge/MOC - SQL.md",
+      "selecionada_por": [
+        "assuntos: SQL"
+      ],
+      "secao": "Conceitos",
+      "texto": "",
+      "motivo": "A nota já contém os links para [[JOIN]] e [[Projeto Estoque]].",
+      "status": "sem_alteracao",
+      "problemas": []
+    },
+    {
+      "id": 2,
+      "nota": "Knowledge/JOIN.md",
+      "selecionada_por": [
+        "conceitos: JOIN"
+      ],
+      "secao": "Aprendizados",
+      "texto": "- No [[Projeto Estoque]], aprendi que JOIN em SQL junta tabelas.",
+      "motivo": "A nota não contém o link para [[Projeto Estoque]] nem o contexto do aprendizado no projeto.",
+      "status": "descartada",
+      "problemas": [
+        "seção 'Aprendizados' não existe na nota nem no template"
+      ]
+    },
+    {
+      "id": 3,
+      "nota": "Projects/Estoque/Projeto Estoque.md",
+      "selecionada_por": [
+        "projetos: Estoque"
+      ],
+      "secao": "Aprendizados",
+      "texto": "- Aprendi que JOIN em SQL junta tabelas [[JOIN]].",
+      "motivo": "A nota contém um novo aprendizado sobre o uso de JOIN em SQL que deve ser incluído na seção de Aprendizados.",
+      "status": "pendente",
+      "problemas": []
+    }
+  ]
+}

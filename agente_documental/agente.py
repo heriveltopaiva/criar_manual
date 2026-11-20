@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+import re
 import unicodedata
 from pathlib import Path
 
@@ -9,6 +11,7 @@ from inventario import ler_cabecalho
 PASTA_BASE = Path(__file__).parent
 PASTA_ENTRADA = PASTA_BASE / "entrada"
 PASTA_VAULT = PASTA_BASE / "vault_teste"
+PASTA_PROPOSTAS = PASTA_BASE / "propostas"
 PASTA_TEMPLATES = Path("/home/herivelto-paiva/Obsidian Vault/Templates")
 ARQUIVO_INSTRUCOES = PASTA_BASE / "instrucoes.md"
 EXTENSOES_ACEITAS = (".md", ".txt")
@@ -124,6 +127,10 @@ def secoes_do_template(tipo):
     return []
 
 
+def secoes_da_nota(texto):
+    return [linha[3:].strip() for linha in texto.splitlines() if linha.startswith("## ")]
+
+
 def propor_alteracao(conteudo, nota, todas_relacionadas):
     texto_nota = nota.read_text(encoding="utf-8")
     tipo = (ler_cabecalho(texto_nota) or {}).get("tipo", "")
@@ -137,38 +144,96 @@ def propor_alteracao(conteudo, nota, todas_relacionadas):
     })
     return perguntar_ao_modelo(pergunta, ESQUEMA_PROPOSTA)
 
-def validar_proposta(proposta):
+
+def validar_proposta(proposta, nota):
     problemas = []
     if not proposta["motivo"].strip():
         problemas.append("motivo vazio")
-    if proposta["alterar"] and not proposta["texto"].strip():
+    if not proposta["alterar"]:
+        return problemas
+    if not proposta["texto"].strip():
         problemas.append("alteração sem texto")
-    if proposta["alterar"] and not proposta["secao"].strip():
-        problemas.append("alteração sem seção")
+
+    texto_nota = nota.read_text(encoding="utf-8")
+    tipo = (ler_cabecalho(texto_nota) or {}).get("tipo", "")
+    secoes_validas = secoes_da_nota(texto_nota) + secoes_do_template(tipo)
+    secao = proposta["secao"].strip().lstrip("#").strip()
+    if normalizar(secao) not in [normalizar(s) for s in secoes_validas]:
+        problemas.append(f"seção '{secao}' não existe na nota nem no template")
+
+    nomes_existentes = {normalizar(n.stem) for n in PASTA_VAULT.rglob("*.md")}
+    for link in re.findall(r"\[\[([^\]|#]+)", proposta["texto"]):
+        if normalizar(link) not in nomes_existentes:
+            problemas.append(f"link para nota inexistente: [[{link}]]")
     return problemas
 
+
+def caminho_registro(arquivo):
+    return PASTA_PROPOSTAS / f"{arquivo.name}.json"
+
+
+def analisar_arquivo(arquivo):
+    conteudo = ler_arquivo(arquivo)
+    classificacao = classificar(conteudo)
+    print(f"=== {arquivo.name}")
+    print(f"  tipo:      {classificacao['tipo']}")
+    print(f"  assuntos:  {classificacao['assuntos']}")
+    print(f"  conceitos: {classificacao['conceitos']}")
+    print(f"  projetos:  {classificacao['projetos']}")
+    relacionadas = relacionar(classificacao)
+    if not relacionadas:
+        print("  notas relacionadas: (nenhuma)")
+
+    propostas = []
+    for numero, (nota, motivos) in enumerate(relacionadas.items(), start=1):
+        caminho_nota = str(nota.relative_to(PASTA_VAULT))
+        print(f"  --- {caminho_nota}  ← {', '.join(motivos)}")
+        proposta = propor_alteracao(conteudo, nota, relacionadas)
+        problemas = validar_proposta(proposta, nota)
+        if problemas:
+            status = "descartada"
+            print(f"      ⚠ PROPOSTA DESCARTADA: {'; '.join(problemas)}")
+        elif proposta["alterar"]:
+            status = "pendente"
+            print(f"      PROPOSTA na seção '## {proposta['secao']}':")
+            print(f"        {proposta['texto'].strip()}")
+            print(f"      motivo: {proposta['motivo']}")
+        else:
+            status = "sem_alteracao"
+            print("      sem alteração")
+            print(f"      motivo: {proposta['motivo']}")
+        propostas.append({
+            "id": numero,
+            "nota": caminho_nota,
+            "selecionada_por": motivos,
+            "secao": proposta["secao"].strip().lstrip("#").strip(),
+            "texto": proposta["texto"].strip(),
+            "motivo": proposta["motivo"],
+            "status": status,
+            "problemas": problemas,
+        })
+
+    return {
+        "origem": arquivo.name,
+        "analisado_em": datetime.now().isoformat(timespec="seconds"),
+        "modelo": MODELO,
+        "classificacao": classificacao,
+        "propostas": propostas,
+    }
+
+
+def salvar_registro(arquivo, registro):
+    destino = caminho_registro(arquivo)
+    destino.write_text(json.dumps(registro, ensure_ascii=False, indent=2), encoding="utf-8")
+    return destino
+
+
 if __name__ == "__main__":
+    PASTA_PROPOSTAS.mkdir(exist_ok=True)
     for arquivo in listar_arquivos_novos():
-        conteudo = ler_arquivo(arquivo)
-        classificacao = classificar(conteudo)
-        print(f"=== {arquivo.name}")
-        print(f"  tipo:      {classificacao['tipo']}")
-        print(f"  assuntos:  {classificacao['assuntos']}")
-        print(f"  conceitos: {classificacao['conceitos']}")
-        print(f"  projetos:  {classificacao['projetos']}")
-        relacionadas = relacionar(classificacao)
-        if not relacionadas:
-            print("  notas relacionadas: (nenhuma)")
-        for nota, motivos in relacionadas.items():
-            print(f"  --- {nota.relative_to(PASTA_VAULT)}  ← {', '.join(motivos)}")
-            proposta = propor_alteracao(conteudo, nota, relacionadas)
-            problemas = validar_proposta(proposta)
-            if problemas:
-                print(f"      ⚠ PROPOSTA INVÁLIDA ({', '.join(problemas)}): descartada")
-            elif proposta["alterar"]:
-                print(f"      PROPOSTA na seção '## {proposta['secao']}':")
-                print(f"        {proposta['texto'].strip()}")
-                print(f"      motivo: {proposta['motivo']}")
-            else:
-                print("      sem alteração")
-                print(f"      motivo: {proposta['motivo']}")
+        if caminho_registro(arquivo).exists():
+            print(f"=== {arquivo.name}: já analisado, pulei")
+            continue
+        registro = analisar_arquivo(arquivo)
+        destino = salvar_registro(arquivo, registro)
+        print(f"  → registro salvo em {destino.relative_to(PASTA_BASE)}")

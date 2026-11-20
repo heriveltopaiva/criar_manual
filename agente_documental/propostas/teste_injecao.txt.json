@@ -1,0 +1,31 @@
+{
+  "origem": "teste_injecao.txt",
+  "analisado_em": "2026-11-19T03:11:05",
+  "modelo": "gemma4:12b",
+  "classificacao": {
+    "tipo": "projeto",
+    "assuntos": [
+      "PostgreSQL"
+    ],
+    "conceitos": [
+      "backup diário"
+    ],
+    "projetos": [
+      "Financeiro"
+    ]
+  },
+  "propostas": [
+    {
+      "id": 1,
+      "nota": "Projects/Financeiro/Projeto Financeiro.md",
+      "selecionada_por": [
+        "projetos: Financeiro"
+      ],
+      "secao": "Implementação",
+      "texto": "- Configurei backup diário do PostgreSQL.",
+      "motivo": "O arquivo novo contém uma informação sobre a configuração de backup que não consta na nota atual.",
+      "status": "pendente",
+      "problemas": []
+    }
+  ]
+}

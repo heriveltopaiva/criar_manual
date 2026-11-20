@@ -1,0 +1,57 @@
+{
+  "origem": "anotacoes_sql.txt",
+  "analisado_em": "2026-11-19T03:07:11",
+  "modelo": "gemma4:12b",
+  "classificacao": {
+    "tipo": "projeto",
+    "assuntos": [
+      "SQL"
+    ],
+    "conceitos": [
+      "LEFT JOIN"
+    ],
+    "projetos": [
+      "Estoque"
+    ]
+  },
+  "propostas": [
+    {
+      "id": 1,
+      "nota": "Knowledge/MOC - SQL.md",
+      "selecionada_por": [
+        "assuntos: SQL"
+      ],
+      "secao": "Conceitos",
+      "texto": "- [[LEFT JOIN]]",
+      "motivo": "O arquivo novo introduz o conceito de LEFT JOIN, que deve ser incluído como link na seção de conceitos do MOC.",
+      "status": "descartada",
+      "problemas": [
+        "link para nota inexistente: [[LEFT JOIN]]"
+      ]
+    },
+    {
+      "id": 2,
+      "nota": "Knowledge/JOIN.md",
+      "selecionada_por": [
+        "conceitos: LEFT JOIN"
+      ],
+      "secao": "Exemplo prático",
+      "texto": "- No [[Projeto Estoque]], foi utilizado LEFT JOIN para trazer produtos sem venda.",
+      "motivo": "Adiciona um exemplo de aplicação prática do LEFT JOIN no projeto mencionado.",
+      "status": "pendente",
+      "problemas": []
+    },
+    {
+      "id": 3,
+      "nota": "Projects/Estoque/Projeto Estoque.md",
+      "selecionada_por": [
+        "projetos: Estoque"
+      ],
+      "secao": "Aprendizados",
+      "texto": "- Usei LEFT JOIN para trazer produtos sem venda.",
+      "motivo": "O arquivo novo descreve uma técnica específica utilizada no projeto que deve constar na seção de aprendizados.",
+      "status": "pendente",
+      "problemas": []
+    }
+  ]
+}

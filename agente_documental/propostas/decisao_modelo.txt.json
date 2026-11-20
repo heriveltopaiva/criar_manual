@@ -1,0 +1,19 @@
+{
+  "origem": "decisao_modelo.txt",
+  "analisado_em": "2026-11-19T03:07:24",
+  "modelo": "gemma4:12b",
+  "classificacao": {
+    "tipo": "decisao",
+    "assuntos": [
+      "IA"
+    ],
+    "conceitos": [
+      "gemma4:12b",
+      "testes de classificação"
+    ],
+    "projetos": [
+      "Segundo Cérebro"
+    ]
+  },
+  "propostas": []
+}

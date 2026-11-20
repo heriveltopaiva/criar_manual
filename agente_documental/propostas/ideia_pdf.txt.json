@@ -1,0 +1,17 @@
+{
+  "origem": "ideia_pdf.txt",
+  "analisado_em": "2026-11-19T03:07:33",
+  "modelo": "gemma4:12b",
+  "classificacao": {
+    "tipo": "ideia",
+    "assuntos": [
+      "Python"
+    ],
+    "conceitos": [
+      "relatórios automáticos",
+      "PDF"
+    ],
+    "projetos": []
+  },
+  "propostas": []
+}
